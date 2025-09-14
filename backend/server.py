@@ -426,6 +426,8 @@ async def get_received_applications(current_user: dict = Depends(get_current_use
     for app in applications:
         if "_id" in app:
             app["_id"] = str(app["_id"])
+        if "professional_object_id" in app:
+            del app["professional_object_id"]  # Remove the temporary field
         if "job_details" in app and "_id" in app["job_details"]:
             app["job_details"]["_id"] = str(app["job_details"]["_id"])
         if "professional_details" in app:
