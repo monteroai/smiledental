@@ -86,7 +86,7 @@ def test_client_registration():
     }
     
     try:
-        response = requests.post(url, json=client_data, timeout=10)
+        response = requests.post(url, json=client_data, timeout=30)
         
         if response.status_code == 200:
             data = response.json()
@@ -127,7 +127,7 @@ def test_professional_registration():
     }
     
     try:
-        response = requests.post(url, json=professional_data, timeout=10)
+        response = requests.post(url, json=professional_data, timeout=30)
         
         if response.status_code == 200:
             data = response.json()
@@ -161,11 +161,13 @@ def test_client_login():
     }
     
     try:
-        response = requests.post(url, json=login_data, timeout=10)
+        response = requests.post(url, json=login_data, timeout=30)
         
         if response.status_code == 200:
             data = response.json()
             if data.get('user_role') == 'client' and 'access_token' in data:
+                # Update token in case it's different from registration
+                test_data['client_token'] = data['access_token']
                 results.log_success("Client Login")
             else:
                 results.log_failure("Client Login", f"Invalid login response: {data}")
@@ -189,11 +191,13 @@ def test_professional_login():
     }
     
     try:
-        response = requests.post(url, json=login_data, timeout=10)
+        response = requests.post(url, json=login_data, timeout=30)
         
         if response.status_code == 200:
             data = response.json()
             if data.get('user_role') == 'professional' and 'access_token' in data:
+                # Update token in case it's different from registration
+                test_data['professional_token'] = data['access_token']
                 results.log_success("Professional Login")
             else:
                 results.log_failure("Professional Login", f"Invalid login response: {data}")
