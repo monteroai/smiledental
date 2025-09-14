@@ -380,6 +380,14 @@ async def get_my_applications(current_user: dict = Depends(get_current_user)):
     ]
     
     applications = await db.applications.aggregate(pipeline).to_list(1000)
+    
+    # Convert ObjectIds to strings for JSON serialization
+    for app in applications:
+        if "_id" in app:
+            app["_id"] = str(app["_id"])
+        if "job_details" in app and "_id" in app["job_details"]:
+            app["job_details"]["_id"] = str(app["job_details"]["_id"])
+    
     return applications
 
 @api_router.get("/applications/received", response_model=List[Dict[str, Any]])
