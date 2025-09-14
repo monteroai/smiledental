@@ -12,8 +12,8 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import AuthScreen from '../components/AuthScreen';
-import DashboardScreen from '../components/DashboardScreen';
+import AuthScreen from './components/AuthScreen';
+import DashboardScreen from './components/DashboardScreen';
 
 const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
