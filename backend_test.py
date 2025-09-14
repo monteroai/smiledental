@@ -65,8 +65,12 @@ def test_client_registration():
     """Test client registration with dental office details"""
     url = f"{API_BASE}/auth/register"
     
+    # Use timestamp to ensure unique email
+    import time
+    timestamp = int(time.time())
+    
     client_data = {
-        "email": "drsmith@smiledental.com",
+        "email": f"drsmith{timestamp}@smiledental.com",
         "password": "SecurePass123!",
         "first_name": "Dr. John",
         "last_name": "Smith",
@@ -90,6 +94,7 @@ def test_client_registration():
                 if data['user_role'] == 'client':
                     test_data['client_token'] = data['access_token']
                     test_data['client_id'] = data['user_id']
+                    test_data['client_email'] = client_data['email']
                     results.log_success("Client Registration")
                 else:
                     results.log_failure("Client Registration", f"Wrong user role: {data['user_role']}")
@@ -105,8 +110,12 @@ def test_professional_registration():
     """Test professional registration with profession details"""
     url = f"{API_BASE}/auth/register"
     
+    # Use timestamp to ensure unique email
+    import time
+    timestamp = int(time.time())
+    
     professional_data = {
-        "email": "sarah.johnson@email.com",
+        "email": f"sarah.johnson{timestamp}@email.com",
         "password": "HygienistPass456!",
         "first_name": "Sarah",
         "last_name": "Johnson",
@@ -126,6 +135,7 @@ def test_professional_registration():
                 if data['user_role'] == 'professional':
                     test_data['professional_token'] = data['access_token']
                     test_data['professional_id'] = data['user_id']
+                    test_data['professional_email'] = professional_data['email']
                     results.log_success("Professional Registration")
                 else:
                     results.log_failure("Professional Registration", f"Wrong user role: {data['user_role']}")
@@ -139,10 +149,14 @@ def test_professional_registration():
 
 def test_client_login():
     """Test client login"""
+    if not test_data.get('client_email'):
+        results.log_failure("Client Login", "No client email available from registration")
+        return
+        
     url = f"{API_BASE}/auth/login"
     
     login_data = {
-        "email": "drsmith@smiledental.com",
+        "email": test_data['client_email'],
         "password": "SecurePass123!"
     }
     
@@ -163,10 +177,14 @@ def test_client_login():
 
 def test_professional_login():
     """Test professional login"""
+    if not test_data.get('professional_email'):
+        results.log_failure("Professional Login", "No professional email available from registration")
+        return
+        
     url = f"{API_BASE}/auth/login"
     
     login_data = {
-        "email": "sarah.johnson@email.com",
+        "email": test_data['professional_email'],
         "password": "HygienistPass456!"
     }
     
