@@ -253,8 +253,8 @@ async def login_user(login_data: UserLogin):
 
 @api_router.get("/auth/me")
 async def get_current_user_info(current_user: dict = Depends(get_current_user)):
-    # Remove password hash from response
-    user_info = {k: v for k, v in current_user.items() if k != "password_hash"}
+    # Remove password hash from response and convert ObjectId to string
+    user_info = {k: v for k, v in current_user.items() if k not in ["password_hash", "_id"]}
     user_info["id"] = str(current_user["_id"])
     return user_info
 
