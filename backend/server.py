@@ -407,9 +407,12 @@ async def get_received_applications(current_user: dict = Depends(get_current_use
             "foreignField": "id",
             "as": "job_details"
         }},
+        {"$addFields": {
+            "professional_object_id": {"$toObjectId": "$professional_id"}
+        }},
         {"$lookup": {
             "from": "users",
-            "localField": "professional_id",
+            "localField": "professional_object_id",
             "foreignField": "_id",
             "as": "professional_details"
         }},
@@ -419,11 +422,16 @@ async def get_received_applications(current_user: dict = Depends(get_current_use
     
     applications = await db.applications.aggregate(pipeline).to_list(1000)
     
-    # Clean up professional details (remove sensitive info)
+    # Clean up professional details (remove sensitive info) and convert ObjectIds
     for app in applications:
+        if "_id" in app:
+            app["_id"] = str(app["_id"])
+        if "job_details" in app and "_id" in app["job_details"]:
+            app["job_details"]["_id"] = str(app["job_details"]["_id"])
         if "professional_details" in app:
             prof = app["professional_details"]
             app["professional_details"] = {
+                "id": str(prof.get("_id")),
                 "first_name": prof.get("first_name"),
                 "last_name": prof.get("last_name"),
                 "email": prof.get("email"),
